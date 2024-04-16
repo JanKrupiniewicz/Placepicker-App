@@ -1,14 +1,14 @@
 export default function Places({availablePlaces, handleClick, title, subtitle}) {
     return (
         <div className="container mx-auto p-5 m-5">
-            <div className="space-y-4 border rounded-md p-5">
-                <h2 className="text-2xl text-center font-bold">
+            <div className="space-y-4 border-2 border-cyan-400 rounded-md p-5">
+                <h2 className="text-2xl text-cyan-400 text-center font-bold poppins-regular">
                     {title}
                 </h2>
                 <div className="space-y-4">
                     {availablePlaces.length ? availablePlaces.map(place => {
                         return (
-                            <div key={place.id} onClick={() => handleClick(place.id)} className="rounded-md hover:bg-gray-100">
+                            <div key={place.id} onClick={() => handleClick(place.id)} className="rounded-md text-gray-500 hover:bg-gray-800 hover:text-gray-300">
                                 <div className="flex p-3 space-x-8">
                                     <img
                                         className="h-32 w-32 object-cover rounded-lg"
@@ -16,10 +16,10 @@ export default function Places({availablePlaces, handleClick, title, subtitle}) 
                                         alt={place.image.alt}
                                     />
                                     <div className="space-y-2">
-                                        <h3 className="text-xl font-bold">
+                                        <h3 className="text-xl poppins-regular font-bold">
                                             {place.title}
                                         </h3>
-                                        <p>
+                                        <p className="poppins-light">
                                             Latitude: {place.lat}, Longitude: {place.lon}
                                         </p>
                                     </div>
@@ -27,7 +27,7 @@ export default function Places({availablePlaces, handleClick, title, subtitle}) 
                             </div>
                         );
                     }) :
-                    <p className="text-center">
+                    <p className="text-center text-gray-500">
                         {subtitle}
                     </p>}
                 </div>

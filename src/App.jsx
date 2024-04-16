@@ -38,8 +38,8 @@ function App() {
   }
 
   return (
-    <>
-      <Modal ref={modal} >
+    <div className='bg-gray-900'>
+      <Modal ref={modal}>
         <ConfirmDelete
           submitAction={handleDeletePlace}
           cancleAction={handleStopDeletePlace}
@@ -59,7 +59,7 @@ function App() {
           title="Available Places"
         />
       </main>
-    </>
+    </div>
   );
 }
 

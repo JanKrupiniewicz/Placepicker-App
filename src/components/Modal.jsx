@@ -12,7 +12,7 @@ const Modal = forwardRef(function Modal({children}, ref) {
     }));
 
     return (
-        <dialog ref={dialog}>
+        <dialog className="rounded-xl md:w-1/3" ref={dialog}>
             {children}
         </dialog>
     );
