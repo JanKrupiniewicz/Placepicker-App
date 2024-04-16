@@ -1,15 +1,34 @@
+import { useState, useRef, useEffect } from 'react';
+
 import Header from './components/Header';
 import Places from './components/Places';
 import Modal from './components/Modal';
 import ConfirmDelete from './components/ConfirmDelete.jsx';
 import { AVAILABLE_PLACES } from './data.js';
+import { sortPlacesByDistance } from './loc.js';
 
-import { useState, useRef } from 'react';
+const storedIds = JSON.parse(localStorage.getItem('selectedPlaces')) || [];
+const storedPlaces = storedIds.map(id => 
+  AVAILABLE_PLACES.find(place => place.id === id)
+);
 
 function App() {
-  const [pickedPlaces, setPickedPlaces] = useState([]);
+  const [availablePlaces, setAvailablePlaces] = useState([]);
+  const [pickedPlaces, setPickedPlaces] = useState(storedPlaces);
   const selectedPlace = useRef();
   const modal = useRef();
+
+  useEffect(() => {
+    navigator.geolocation.getCurrentPosition((position) => {
+      const sortedPlaces = sortPlacesByDistance(
+        AVAILABLE_PLACES, 
+        position.coords.latitude, 
+        position.coords.longitude
+      );
+
+      setAvailablePlaces(sortedPlaces);
+    });
+  }, []);
 
   function handleStartDeletePlace(id) { 
     modal.current.openModal();
@@ -25,6 +44,12 @@ function App() {
       return prevPlaces.filter(place => place.id !== selectedPlace.current);
     });
     modal.current.closeModal();
+
+    const storedIds = JSON.parse(localStorage.getItem('selectedPlaces')) || [];
+    localStorage.setItem(
+      'selectedPlaces', 
+      JSON.stringify(storedIds.filter(id => id !== selectedPlace.current))
+    );
   }
 
   function handleAddPlace(id) {
@@ -35,10 +60,14 @@ function App() {
       const place = AVAILABLE_PLACES.find(place => place.id === id);
       return [...prevPlaces, place];
     })
+    const storedIds = JSON.parse(localStorage.getItem('selectedPlaces')) || [];
+    if(storedIds.indexOf(id) === -1) {
+      localStorage.setItem('selectedPlaces', JSON.stringify([id, ...storedIds]));
+    }
   }
 
   return (
-    <div className='bg-gray-900'>
+    <>
       <Modal ref={modal}>
         <ConfirmDelete
           submitAction={handleDeletePlace}
@@ -54,12 +83,13 @@ function App() {
           subtitle="Click on the places you would like to visit."
         />
         <Places
-          availablePlaces={AVAILABLE_PLACES}
+          availablePlaces={availablePlaces}
           handleClick={handleAddPlace}
           title="Available Places"
+          subtitle="Sorting places by distance..."
         />
       </main>
-    </div>
+    </>
   );
 }
 
