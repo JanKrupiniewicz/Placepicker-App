@@ -1,27 +1,30 @@
 import Header from './components/Header';
 import Places from './components/Places';
 import Modal from './components/Modal';
+import ConfirmDelete from './components/ConfirmDelete.jsx';
 import { AVAILABLE_PLACES } from './data.js';
 
 import { useState, useRef } from 'react';
 
 function App() {
   const [pickedPlaces, setPickedPlaces] = useState([]);
+  const selectedPlace = useRef();
   const modal = useRef();
 
-  function startDeletePlace(id) { 
-    modal.current.showModal();
-    modal.current.addEventListener('close', (event) => {
-      if (event.target.returnValue === 'confirm') {
-        handleDeletePlace(id);
-      }
-    });
+  function handleStartDeletePlace(id) { 
+    modal.current.openModal();
+    selectedPlace.current = id;
   }
   
-  function handleDeletePlace(id) {
-    return setPickedPlaces(prevPlaces => {
-      return prevPlaces.filter(place => place.id !== id);
+  function handleStopDeletePlace(id) {
+    modal.current.closeModal();
+  }
+
+  function handleDeletePlace() {
+    setPickedPlaces(prevPlaces => {
+      return prevPlaces.filter(place => place.id !== selectedPlace.current);
     });
+    modal.current.closeModal();
   }
 
   function handleAddPlace(id) {
@@ -36,12 +39,17 @@ function App() {
 
   return (
     <>
-      <Modal ref={modal} ></Modal>
+      <Modal ref={modal} >
+        <ConfirmDelete
+          submitAction={handleDeletePlace}
+          cancleAction={handleStopDeletePlace}
+        />
+      </Modal>
       <Header/>
       <main>
         <Places
           availablePlaces={pickedPlaces}
-          handleClick={startDeletePlace}
+          handleClick={handleStartDeletePlace}
           title="I would like to visit ..."
           subtitle="Click on the places you would like to visit."
         />
