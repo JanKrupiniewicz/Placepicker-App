@@ -2,6 +2,25 @@
 @tailwind components;
 @tailwind utilities;
 
+.progress-bar {
+  width: 100%;
+  height: 20px;
+  border: 2px solid rgb(127 29 29); 
+  border-radius: 5px;
+}
+
+.progress-bar::-webkit-progress-bar {
+  background-color: rgb(127 29 29);
+}
+
+.progress-bar::-webkit-progress-value {
+  background-color: rgb(34 211 238);
+}
+
+.progress-bar::-moz-progress-bar {
+  background-color: rgb(34 211 238);
+}
+
 .poppins-light {
     font-family: "Poppins", sans-serif;
     font-weight: 300;

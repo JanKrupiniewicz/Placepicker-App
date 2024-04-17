@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 
 import Header from './components/Header';
 import Places from './components/Places';
@@ -13,10 +13,10 @@ const storedPlaces = storedIds.map(id =>
 );
 
 function App() {
+  const [modalOpen, setModalOpen] = useState(false);
   const [availablePlaces, setAvailablePlaces] = useState([]);
   const [pickedPlaces, setPickedPlaces] = useState(storedPlaces);
   const selectedPlace = useRef();
-  const modal = useRef();
 
   useEffect(() => {
     navigator.geolocation.getCurrentPosition((position) => {
@@ -31,26 +31,27 @@ function App() {
   }, []);
 
   function handleStartDeletePlace(id) { 
-    modal.current.openModal();
+    setModalOpen(true);
     selectedPlace.current = id;
   }
   
   function handleStopDeletePlace(id) {
-    modal.current.closeModal();
+    setModalOpen(false);
   }
 
-  function handleDeletePlace() {
-    setPickedPlaces(prevPlaces => {
-      return prevPlaces.filter(place => place.id !== selectedPlace.current);
-    });
-    modal.current.closeModal();
-
-    const storedIds = JSON.parse(localStorage.getItem('selectedPlaces')) || [];
-    localStorage.setItem(
-      'selectedPlaces', 
-      JSON.stringify(storedIds.filter(id => id !== selectedPlace.current))
-    );
-  }
+  const handleDeletePlace = useCallback(
+    function handleDeletePlace() {
+      setPickedPlaces(prevPlaces => {
+        return prevPlaces.filter(place => place.id !== selectedPlace.current);
+      });
+      setModalOpen(false);
+  
+      const storedIds = JSON.parse(localStorage.getItem('selectedPlaces')) || [];
+      localStorage.setItem(
+        'selectedPlaces', 
+        JSON.stringify(storedIds.filter(id => id !== selectedPlace.current))
+      );
+    }, []);
 
   function handleAddPlace(id) {
     setPickedPlaces(prevPlaces => {
@@ -68,7 +69,7 @@ function App() {
 
   return (
     <>
-      <Modal ref={modal}>
+      <Modal open={modalOpen} onClose={handleStopDeletePlace}>
         <ConfirmDelete
           submitAction={handleDeletePlace}
           cancleAction={handleStopDeletePlace}
